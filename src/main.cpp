@@ -10,6 +10,7 @@
 //#include "src/board/layout.h"
 //#include "src/opengl/board.h"
 #include <stdio.h>
+#include <boost/program_options.hpp>
 
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
 // Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
@@ -38,13 +39,39 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+namespace po = boost::program_options;
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-int main(int, char**)
+int main(int argc, char* argv[])
 {
+    po::options_description desc("Common options");
+    desc.add_options()
+			("config", po::value<std::string>()->default_value("config.xml"), "File to read all the configuration from")
+            ("help", po::bool_switch(), "Print help message")
+			;
+
+    try {
+        po::variables_map vm;
+        po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc).run();
+        po::store(parsed, vm);
+        if (vm["help"].as<bool>()) {
+            std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
+            std::cout << desc << std::endl;
+            return 0;
+        }
+    }
+    catch(po::error& e) { 
+        std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
+        return EXIT_FAILURE;
+    }
+
+
+
+
     /*
     std::string dungeon_assets = "/Users/jgsogo/dev/projects/conan-cpp-project/board/board/assets/dungeon/board.xml";
     auto dungeon = assets::tileset::load(dungeon_assets);

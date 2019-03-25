@@ -17,6 +17,7 @@ class BoardImgui(ConanFile):
         
         self.requires("ui-board_game/0.0@sword/sorcery")
         self.requires("ui-tileset-glfw/0.0@sword/sorcery")
+        self.requires("boost/1.69.0@conan/stable")
         # self.requires("glfw/3.2.1@bincrafters/stable")
         # self.requires("rapidxml/1.13@bincrafters/stable")
         # self.requires("boost_filesystem/1.69.0@bincrafters/stable")
@@ -26,3 +27,4 @@ class BoardImgui(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        cmake.install()

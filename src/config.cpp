@@ -1,14 +1,17 @@
 #include "config.h"
-#include <rapidxml.hpp>
-#include <rapidxml_utils.hpp>
-#include "tileset/tileset.h"
 
 #include <iostream>
+
 #include <boost/filesystem.hpp>
+#include <rapidxml.hpp>
+#include <rapidxml_utils.hpp>
 
 
 struct Config::Impl {
+    int id;
+    std::string name;
     std::map<std::string, assets::tileset> _tilesets;
+    std::map<std::string, std::string> _layouts;
 };
 
 Config::Config() : pImpl(std::make_unique<Impl>()) {}
@@ -29,13 +32,28 @@ Config Config::load(const std::string& filepath) {
         doc.parse<0>(xmlFile.data());
         auto root = doc.first_node();
 
+        // Parse some metadata
+        config.pImpl->id = atoi(root->first_attribute("id")->value());
+        config.pImpl->name = root->first_attribute("name")->value();
+
         // Parse tilesets
         auto tilesets = root->first_node("tilesets");
         auto tileset_node = tilesets->first_node("tileset");
         while (tileset_node) {
             auto filename = (basepath / tileset_node->value()).normalize().generic_string();
-            auto [_, inserted] = config.pImpl->_tilesets.try_emplace(tileset_node->first_attribute("id")->value(), assets::tileset::load("filename"));
+            auto [_, inserted] = config.pImpl->_tilesets.try_emplace(tileset_node->first_attribute("id")->value(), assets::tileset::load(filename));
+            tileset_node = tileset_node->next_sibling("tileset");
         }
+
+        // Parser layouts
+        auto layouts = root->first_node("layouts");
+        auto layout_node = layouts->first_node("layout");
+        while (layout_node) {
+            auto filename = (basepath / layout_node->value()).normalize().generic_string();
+            auto [_, inserted] = config.pImpl->_layouts.try_emplace(layout_node->first_attribute("id")->value(), filename);
+            layout_node = layout_node->next_sibling("layout");
+        }
+
         return config;
     }
     catch(rapidxml::parse_error & e) {
@@ -46,4 +64,20 @@ Config Config::load(const std::string& filepath) {
         // TODO:
         throw e;
     }
+}
+
+int Config::id() const {
+    return pImpl->id;
+}
+
+const std::string& Config::name() const {
+    return pImpl->name;
+}
+
+const std::map<std::string, assets::tileset>& Config::tilesets() const {
+    return pImpl->_tilesets;
+}
+
+const std::map<std::string, std::string>& Config::layouts() const {
+    return pImpl->_layouts;
 }

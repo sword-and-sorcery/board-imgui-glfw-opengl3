@@ -5,6 +5,10 @@ class BoardImgui(ConanFile):
     name = "ui-board-imgui-glfw-opengl3"
     version = "0.0"
 
+    settings = "os", "arch", "compiler", "build_type"
+    options = {"shared": [True, False]}
+    default_options = {"shared": False}
+
     generators = "cmake"
 
     scm = {"type": "git",

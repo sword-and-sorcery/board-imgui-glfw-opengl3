@@ -12,7 +12,7 @@ add_executable(board_imgui src/main.cpp
                            ${CONAN_SRC_DIRS_IMGUI}/bindings/imgui_impl_opengl3.cpp)
 set_target_properties(board_imgui PROPERTIES CXX_STANDARD 17)
 target_include_directories(board_imgui PRIVATE ${CONAN_SRC_DIRS_IMGUI})
-target_link_libraries(board_imgui PRIVATE CONAN_PKG::imgui CONAN_PKG::ui-tileset-glfw CONAN_PKG::glew CONAN_PKG::boost)
+target_link_libraries(board_imgui PRIVATE CONAN_PKG::ui-tileset-glfw CONAN_PKG::ui-board_game CONAN_PKG::imgui CONAN_PKG::glew CONAN_PKG::boost)
 
 install(TARGETS board_imgui
         RUNTIME DESTINATION bin

@@ -2,6 +2,12 @@
 // If you are new to dear imgui, see examples/README.txt and documentation at the top of imgui.cpp.
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan graphics context creation, etc.)
 
+#include "config.h"
+#include <boost/filesystem.hpp>
+
+#include "tileset_glfw/textures.h"
+#include "board_game/board.h"
+
 #include "imgui.h"
 #include "bindings/imgui_impl_glfw.h"
 #include "bindings/imgui_impl_opengl3.h"
@@ -48,29 +54,58 @@ static void glfw_error_callback(int error, const char* description)
 
 int main(int argc, char* argv[])
 {
+    std::string config_file;
+
     po::options_description desc("Common options");
     desc.add_options()
-			("config", po::value<std::string>()->default_value("config.xml"), "File to read all the configuration from")
+			("config", po::value<std::string>(), "File to read all the configuration from")
             ("help", po::bool_switch(), "Print help message")
 			;
 
     try {
         po::variables_map vm;
-        po::parsed_options parsed = po::command_line_parser(argc, argv).options(desc).run();
-        po::store(parsed, vm);
+        po::store(po::parse_command_line(argc, argv, desc), vm);
         if (vm["help"].as<bool>()) {
             std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
             std::cout << desc << std::endl;
             return 0;
         }
+        config_file = vm["config"].as<std::string>();
     }
     catch(po::error& e) { 
         std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
         return EXIT_FAILURE;
     }
 
+    // Recap information from the config XML file
+    config_file = boost::filesystem::canonical(config_file, boost::filesystem::current_path()).generic_string();
+    auto config = Config::load(config_file);
+    std::cout << config.id() << " - " << config.name() << "\n";
+    std::cout << "=======================\n";
+    std::cout << " - config: " << config_file << "\n";
+    std::cout << " - tilesets: ";
+    for (auto& [id, _]: config.tilesets()) {
+        std::cout << id;
+    }
+    std::cout << "\n";
+
+    // Load images to memory
+    for (auto& [id, tileset]: config.tilesets()) {
+        opengl::add(id, tileset);
+    }
+
+    // Create the board
+    //  add layouts
+    board game_board{};
+    for (auto& [id, layout]: config.layouts()) {
+        game_board.add_layer(layout, id);
+    }
+    //  connect to data provider
 
 
+    // Create the windows, drawables, forever loop...
+
+    return 0;
 
     /*
     std::string dungeon_assets = "/Users/jgsogo/dev/projects/conan-cpp-project/board/board/assets/dungeon/board.xml";

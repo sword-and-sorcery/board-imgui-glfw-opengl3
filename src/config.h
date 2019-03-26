@@ -2,6 +2,7 @@
 #pragma once
 
 #include <memory>
+#include "tileset/tileset.h"
 
 class Config {
 public:
@@ -10,6 +11,12 @@ public:
     ~Config();
 
     static Config load(const std::string& filepath);
+
+    int id() const;
+    const std::string& name() const;
+
+    const std::map<std::string, assets::tileset>& tilesets() const;
+    const std::map<std::string, std::string>& layouts() const;
 
 protected:
     struct Impl;

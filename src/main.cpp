@@ -6,7 +6,7 @@
 #include <boost/filesystem.hpp>
 
 #include "tileset_glfw/textures.h"
-#include "board_game/board.h"
+#include "board_game/board_game.h"
 
 #include "imgui.h"
 #include "bindings/imgui_impl_glfw.h"
@@ -96,11 +96,13 @@ int main(int argc, char* argv[])
 
     // Create the board
     //  add layouts
-    board game_board{};
+    BoardGame game_board{config.width()*config.units(), config.height()*config.units()};
     for (auto& [id, layout]: config.layouts()) {
         game_board.add_layer(layout, id);
     }
+
     //  connect to data provider
+    game_board.subscribe_to("localhost:8000"); // TODO: Not implemented behind
 
 
     // Create the windows, drawables, forever loop...

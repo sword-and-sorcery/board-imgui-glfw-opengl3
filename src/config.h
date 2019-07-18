@@ -14,6 +14,9 @@ public:
 
     int id() const;
     const std::string& name() const;
+    int units() const;
+    float width() const;
+    float height() const;
 
     const std::map<std::string, assets::tileset>& tilesets() const;
     const std::map<std::string, std::string>& layouts() const;

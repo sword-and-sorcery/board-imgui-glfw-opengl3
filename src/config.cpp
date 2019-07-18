@@ -10,6 +10,8 @@
 struct Config::Impl {
     int id;
     std::string name;
+    int units;
+    float width, height;
     std::map<std::string, assets::tileset> _tilesets;
     std::map<std::string, std::string> _layouts;
 };
@@ -35,6 +37,11 @@ Config Config::load(const std::string& filepath) {
         // Parse some metadata
         config.pImpl->id = atoi(root->first_attribute("id")->value());
         config.pImpl->name = root->first_attribute("name")->value();
+
+        auto size_node = root->first_node("size");
+        config.pImpl->units = atof(size_node->first_attribute("units")->value());
+        config.pImpl->width = atof(size_node->first_attribute("width")->value());
+        config.pImpl->height = atof(size_node->first_attribute("height")->value());
 
         // Parse tilesets
         auto tilesets = root->first_node("tilesets");
@@ -72,6 +79,18 @@ int Config::id() const {
 
 const std::string& Config::name() const {
     return pImpl->name;
+}
+
+int Config::units() const {
+    return pImpl->units;
+}
+
+float Config::width() const {
+    return pImpl->width;
+}
+
+float Config::height() const {
+    return pImpl->height;
 }
 
 const std::map<std::string, assets::tileset>& Config::tilesets() const {

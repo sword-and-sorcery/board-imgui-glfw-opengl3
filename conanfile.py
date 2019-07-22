@@ -16,7 +16,7 @@ class BoardImgui(ConanFile):
            "revision": "auto"}
 
     def requirements(self):
-        self.requires("imgui/1.66@bincrafters/testing")
+        self.requires("imgui/1.69@bincrafters/stable")
         self.requires("glew/2.1.0@bincrafters/stable")
         
         self.requires("ui-board_game/0.0@sword/sorcery")

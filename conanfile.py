@@ -1,3 +1,4 @@
+import os
 from conans import ConanFile, CMake
 
 
@@ -26,6 +27,11 @@ class BoardImgui(ConanFile):
         # self.requires("rapidxml/1.13@bincrafters/stable")
         # self.requires("boost_filesystem/1.69.0@bincrafters/stable")
         # self.requires("stb/20180214@conan/stable")
+
+    def imports(self):
+        bindings_dir = os.path.join(os.path.dirname(__file__), "bindings")
+        self.copy("imgui_impl_glfw*", src="misc/bindings", dst=bindings_dir, root_package="imgui")
+        self.copy("imgui_impl_opengl3*", src="misc/bindings", dst=bindings_dir, root_package="imgui")
 
     def build(self):
         cmake = CMake(self)

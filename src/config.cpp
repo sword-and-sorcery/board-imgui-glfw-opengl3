@@ -10,8 +10,10 @@
 struct Config::Impl {
     int id;
     std::string name;
+    int units;
+    float width, height;
     std::map<std::string, assets::tileset> _tilesets;
-    std::map<std::string, std::string> _layouts;
+    std::map<std::string, std::pair<std::string, std::string>> _layouts;
 };
 
 Config::Config() : pImpl(std::make_unique<Impl>()) {}
@@ -36,6 +38,11 @@ Config Config::load(const std::string& filepath) {
         config.pImpl->id = atoi(root->first_attribute("id")->value());
         config.pImpl->name = root->first_attribute("name")->value();
 
+        auto size_node = root->first_node("size");
+        config.pImpl->units = atof(size_node->first_attribute("units")->value());
+        config.pImpl->width = atof(size_node->first_attribute("width")->value());
+        config.pImpl->height = atof(size_node->first_attribute("height")->value());
+
         // Parse tilesets
         auto tilesets = root->first_node("tilesets");
         auto tileset_node = tilesets->first_node("tileset");
@@ -50,7 +57,8 @@ Config Config::load(const std::string& filepath) {
         auto layout_node = layouts->first_node("layout");
         while (layout_node) {
             auto filename = (basepath / layout_node->value()).normalize().generic_string();
-            auto [_, inserted] = config.pImpl->_layouts.try_emplace(layout_node->first_attribute("id")->value(), filename);
+            auto tileset = layout_node->first_attribute("tileset")->value();
+            auto [_, inserted] = config.pImpl->_layouts.try_emplace(layout_node->first_attribute("id")->value(), std::make_pair(tileset, filename));
             layout_node = layout_node->next_sibling("layout");
         }
 
@@ -74,10 +82,22 @@ const std::string& Config::name() const {
     return pImpl->name;
 }
 
+int Config::units() const {
+    return pImpl->units;
+}
+
+float Config::width() const {
+    return pImpl->width;
+}
+
+float Config::height() const {
+    return pImpl->height;
+}
+
 const std::map<std::string, assets::tileset>& Config::tilesets() const {
     return pImpl->_tilesets;
 }
 
-const std::map<std::string, std::string>& Config::layouts() const {
+const std::map<std::string, std::pair<std::string, std::string>>& Config::layouts() const {
     return pImpl->_layouts;
 }

@@ -7,6 +7,7 @@
 
 #include "tileset_glfw/textures.h"
 #include "board_game/board.h"
+#include "board_game/board_game.h"
 
 #include "imgui.h"
 #include "bindings/imgui_impl_glfw.h"
@@ -17,6 +18,7 @@
 //#include "src/opengl/board.h"
 #include <stdio.h>
 #include <boost/program_options.hpp>
+#include "draw_glfw_opengl3.h"
 
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
 // Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
@@ -96,17 +98,27 @@ int main(int argc, char* argv[])
 
     // Create the board
     //  add layouts
-    board game_board{};
+//<<<<<<< Updated upstream
+//    BoardGame game_board{config.width()*config.units(), config.height()*config.units()};
+//=======
+    board board{};
+//>>>>>>> Stashed changes
     for (auto& [id, layout]: config.layouts()) {
-        game_board.add_layer(layout, id);
+        auto& [tileset, filename] = layout;
+        board.add_layer(filename, id, tileset);
     }
-    //  connect to data provider
 
+    //  connect to data provider
+//    game_board.subscribe_to("localhost:8000"); // TODO: Not implemented behind
+
+
+    BoardGame game{"", board};
+    Draw draw{};
+    for (auto& [id, tileset]: config.tilesets()) {
+        draw.units[id] = tileset.units();
+    }
 
     // Create the windows, drawables, forever loop...
-
-    return 0;
-
     /*
     std::string dungeon_assets = "/Users/jgsogo/dev/projects/conan-cpp-project/board/board/assets/dungeon/board.xml";
     auto dungeon = assets::tileset::load(dungeon_assets);
@@ -251,6 +263,10 @@ int main(int argc, char* argv[])
         // Create windows without scrollbars and so on
         //heroquest_board.draw(ImVec2{0.5,0.5});
 
+        ImGui::Begin("Board");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        std::function<void (const std::string& tileset, const std::string& tile, const tile_position& position)> f = [&draw](const std::string& tileset, const std::string& tile, const tile_position& position){draw.draw(tileset, tile, position);};
+        game.draw(f);
+        ImGui::End();
 
         //ImGui::Image(dungeon10, ImVec2(50, 100));
 

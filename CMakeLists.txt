@@ -9,7 +9,9 @@ add_definitions("-DIMGUI_IMPL_OPENGL_LOADER_GLEW")
 add_executable(board_imgui src/main.cpp
                            src/config.cpp
                            bindings/imgui_impl_glfw.cpp
-                           bindings/imgui_impl_opengl3.cpp src/draw_glfw_opengl3.cpp src/draw_glfw_opengl3.h)
+                           bindings/imgui_impl_opengl3.cpp
+                           src/draw_glfw_opengl3.cpp
+                           src/draw_glfw_opengl3.h)
 set_target_properties(board_imgui PROPERTIES CXX_STANDARD 17)
 target_link_libraries(board_imgui PRIVATE CONAN_PKG::ui-tileset-glfw CONAN_PKG::ui-board_game CONAN_PKG::imgui CONAN_PKG::glew CONAN_PKG::boost)
 target_include_directories(

@@ -3,7 +3,7 @@ from conans import ConanFile, CMake
 
 
 class BoardImgui(ConanFile):
-    name = "ui-board-imgui-glfw-opengl3"
+    name = "ui-board-imgui"
     version = "0.0"
 
     settings = "os", "arch", "compiler", "build_type"
@@ -29,7 +29,7 @@ class BoardImgui(ConanFile):
         # self.requires("stb/20180214@conan/stable")
 
     def imports(self):
-        bindings_dir = os.path.join(os.path.dirname(__file__), "bindings")
+        bindings_dir = os.path.join(self.source_folder, "bindings")
         self.copy("imgui_impl_glfw*", src="misc/bindings", dst=bindings_dir, root_package="imgui")
         self.copy("imgui_impl_opengl3*", src="misc/bindings", dst=bindings_dir, root_package="imgui")
 
@@ -38,3 +38,6 @@ class BoardImgui(ConanFile):
         cmake.configure()
         cmake.build()
         cmake.install()
+
+    def package(self):
+        self.copy("LICENSE", dst="licenses")

@@ -1,5 +1,7 @@
 # ui-board-imgui
 
+> ⚠️ **Full docs**: https://sword-and-sorcery.github.io/sword-and-sorcery/
+
 Executable, it uses ImGUI library to draw a board
 
 ```

@@ -14,6 +14,7 @@ node {
 
         stage("Get dependencies and create app") {
             client.run(command: "remote add inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan")
+            client.run(command: "install imgui/1.69@bincrafters/stable --build imgui")
             String createCommand = "create . sword/sorcery"
             client.run(command: createCommand)
         }

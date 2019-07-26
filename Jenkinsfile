@@ -13,6 +13,7 @@ node {
         }
 
         stage("Get dependencies and create app") {
+            client.run(command: "remote add inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan")
             String createCommand = "create . sword/sorcery"
             client.run(command: createCommand)
         }
